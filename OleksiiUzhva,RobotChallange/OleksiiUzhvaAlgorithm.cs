@@ -21,7 +21,7 @@ namespace OleksiiUzhva_RobotChallange
         NONE
     };
 
-    // Dictionary<EnergyStation, List<Cell>>
+    // Dictionary<Position, List<Cell>>
     public class OleksiiUzhvaAlgorithm : IRobotAlgorithm
     {
         public int RoundCount = 0;
@@ -32,11 +32,11 @@ namespace OleksiiUzhva_RobotChallange
 
         //public List<List<Dictionary<Position, bool>>> _Stations = new List<List<Dictionary<Position, bool>>>();
 
-        public Dictionary<EnergyStation, List<Cell>> _Stations = new Dictionary<EnergyStation, List<Cell>>();
+        public Dictionary<Position, List<Cell>> _Stations = new Dictionary<Position, List<Cell>>();
 
-        public Dictionary<int, EnergyStation> _AssignedStations = new Dictionary<int, EnergyStation>();
+        public Dictionary<int, Position> _AssignedStations = new Dictionary<int, Position>();
 
-        public Dictionary<EnergyStation, int> _CountAssigned = new Dictionary<EnergyStation, int>();
+        public Dictionary<Position, int> _CountAssigned = new Dictionary<Position, int>();
 
         public Manager Manager;
 
@@ -58,11 +58,11 @@ namespace OleksiiUzhva_RobotChallange
 
         public void AssignCells(Map map, IList<Robot.Common.Robot> robots)
         {
-            for (int i = 0; i < map.Stations.Count; i++)
+            foreach (EnergyStation station in map.Stations)
             {
-                _Stations.Add(map.Stations[i], new List<Cell>());
-                _CountAssigned.Add(map.Stations[i], 0);
-                Position stationPos = map.Stations[i].Position;
+                _Stations.Add(station.Position, new List<Cell>());
+                _CountAssigned.Add(station.Position, 0);
+                Position stationPos = station.Position;
                 for (int n = -2; n <= 2; n++)
                 {
                     for (int m = -2; m <= 2; m++)
@@ -70,22 +70,50 @@ namespace OleksiiUzhva_RobotChallange
                         if (n == 0)
                         {
                             Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[map.Stations[i]].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
                         }
                         else if (n % 2 == 0 && m % 2 == 0)
                         {
                             Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[map.Stations[i]].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
                         }
                         else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
                         {
                             Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[map.Stations[i]].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
                         }
                     }
                 }
-
             }
+
+            //for (int i = 0; i < map.Stations.Count; i++)
+            //{
+            //    _Stations.Add(map.Stations[i].Position, new List<Cell>());
+            //    _CountAssigned.Add(map.Stations[i].Position, 0);
+            //    Position stationPos = map.Stations[i].Position;
+            //    for (int n = -2; n <= 2; n++)
+            //    {
+            //        for (int m = -2; m <= 2; m++)
+            //        {
+            //            if (n == 0)
+            //            {
+            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+            //            }
+            //            else if (n % 2 == 0 && m % 2 == 0)
+            //            {
+            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+            //            }
+            //            else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
+            //            {
+            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+            //            }
+            //        }
+            //    }
+            //}
+
         }
         /*
          * Assigns each robot a station to stick around to. If num of robots 
@@ -99,10 +127,10 @@ namespace OleksiiUzhva_RobotChallange
                 List<EnergyStation> st = map.GetNearbyResources(robots[robotToMoveIndex].Position, i);
                 if (st.Count > 0)
                 {
-                    if (_CountAssigned[st[0]] <= 16)
+                    if (_CountAssigned[st[0].Position] <= 16)
                     {
-                        _AssignedStations.Add(robotToMoveIndex, st[0]);
-                        _CountAssigned[st[0]]++;
+                        _AssignedStations.Add(robotToMoveIndex, st[0].Position);
+                        _CountAssigned[st[0].Position]++;
                         break;
                     }
                 }
@@ -139,21 +167,21 @@ namespace OleksiiUzhva_RobotChallange
             switch(direction)
             {
                 case(Cardinal.E):
-                    return new Position(goal.X--, goal.Y);
+                    return new Position(--goal.X, goal.Y);
                 case (Cardinal.SE):
-                    return new Position(goal.X--, goal.Y++);
+                    return new Position(--goal.X, ++goal.Y);
                 case (Cardinal.S):
-                    return new Position(goal.X, goal.Y++);
+                    return new Position(goal.X, ++goal.Y);
                 case (Cardinal.SW):
-                    return new Position(goal.X++, goal.Y++);
+                    return new Position(++goal.X, ++goal.Y);
                 case (Cardinal.W):
-                    return new Position(goal.X++, goal.Y);
+                    return new Position(++goal.X, goal.Y);
                 case (Cardinal.NW):
-                    return new Position(goal.X++, goal.Y--);
+                    return new Position(++goal.X, --goal.Y);
                 case (Cardinal.N):
-                    return new Position(goal.X, goal.Y--);
+                    return new Position(goal.X, --goal.Y);
                 case (Cardinal.NE):
-                    return new Position(goal.X--, goal.Y--);
+                    return new Position(--goal.X, --goal.Y);
                 default:
                     return goal;
             }
@@ -206,6 +234,8 @@ namespace OleksiiUzhva_RobotChallange
                 }
 
                 AssignMeAStation(map, robots, robotToMoveIndex);
+                int a = 0;
+                int b = a + 10;
             }
 
             RobotCommand Command = new MoveCommand() { NewPosition = robots[robotToMoveIndex].Position};
@@ -215,7 +245,8 @@ namespace OleksiiUzhva_RobotChallange
 
 
             //Check if can move
-
+            // TODO: Stop wasting time checking every cell in area. Go for the firs
+            // OR FOR THE CLOSEST(?) cell.
             Position goalPosition = _Stations[_AssignedStations[robotToMoveIndex]][0].position;
            
             for(int i = 0; i < 17; i++)
@@ -246,6 +277,7 @@ namespace OleksiiUzhva_RobotChallange
                 {
                     // Shothen a vector
                     goalPosition = Shothen_The_Vector(goalPosition, direction);
+                    direction = Find_The_Direction(currentPosition, goalPosition);
                 }
                 Command = new MoveCommand() { NewPosition = goalPosition };
             }

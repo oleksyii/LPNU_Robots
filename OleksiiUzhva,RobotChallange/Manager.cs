@@ -29,6 +29,7 @@ namespace OleksiiUzhva_RobotChallange
                 {
                     result = false;
                     cell.free = false;
+                    return result;
                 }
                     
             }
