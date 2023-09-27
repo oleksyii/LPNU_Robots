@@ -31,9 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Avdieiev.Serhii.RobotChallange">
+      <HintPath>..\..\..\..\..\..\Tournament\AlgorithmDlls\Avdieiev.Serhii.RobotChallange.dll</HintPath>
+    </Reference>
     <Reference Include="Robot.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=05c30dc4c4572aa3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Tournament\Robot.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Robot.Tournament">
+      <HintPath>..\..\..\..\..\..\Tournament\Robot.Tournament.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

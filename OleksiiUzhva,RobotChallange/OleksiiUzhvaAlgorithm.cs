@@ -1,7 +1,9 @@
 ﻿using Robot.Common;
+using Robot.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +28,8 @@ namespace OleksiiUzhva_RobotChallange
     {
         public int RoundCount = 0;
 
+        public int CountMyBots = 10;
+
         public string Author => "Oleksii Uzhva";
 
         public string Description => "Super smart algorithm";
@@ -41,6 +45,8 @@ namespace OleksiiUzhva_RobotChallange
         public Manager Manager;
 
         public bool b_Done_Assigning_Map = false;
+
+        public const int c_EnergyToCreateRobot = 200;
 
         // Have a dictionary of robotIndexes and corresponding stations
 
@@ -60,78 +66,142 @@ namespace OleksiiUzhva_RobotChallange
         {
             foreach (EnergyStation station in map.Stations)
             {
-                _Stations.Add(station.Position, new List<Cell>());
-                _CountAssigned.Add(station.Position, 0);
-                Position stationPos = station.Position;
-                for (int n = -2; n <= 2; n++)
+                if (!_Stations.ContainsKey(station.Position))
                 {
-                    for (int m = -2; m <= 2; m++)
+
+                    _Stations.Add(station.Position, new List<Cell>());
+                    _CountAssigned.Add(station.Position, 0);
+                    for (int n = -2; n <= 2; n++)
                     {
-                        if (n == 0)
+                        for (int m = -2; m <= 2; m++)
                         {
-                            Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
-                        }
-                        else if (n % 2 == 0 && m % 2 == 0)
-                        {
-                            Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
-                        }
-                        else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
-                        {
-                            Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-                            _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            Position stationPos = station.Position;
+
+                            if (n == 0)
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            }
+                            else if (n % 2 == 0 && m % 2 == 0)
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            }
+                            else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
+                            }
                         }
                     }
                 }
             }
 
-            //for (int i = 0; i < map.Stations.Count; i++)
-            //{
-            //    _Stations.Add(map.Stations[i].Position, new List<Cell>());
-            //    _CountAssigned.Add(map.Stations[i].Position, 0);
-            //    Position stationPos = map.Stations[i].Position;
-            //    for (int n = -2; n <= 2; n++)
-            //    {
-            //        for (int m = -2; m <= 2; m++)
-            //        {
-            //            if (n == 0)
-            //            {
-            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
-            //            }
-            //            else if (n % 2 == 0 && m % 2 == 0)
-            //            {
-            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
-            //            }
-            //            else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
-            //            {
-            //                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
-            //                _Stations[map.Stations[i].Position].Add(new Cell(temp, Manager.IsCellFree(temp, robots)));
-            //            }
-            //        }
-            //    }
-            //}
+            AssureAssignCells(map, robots);
 
         }
+
+        public void AssureAssignCells(Map map, IList<Robot.Common.Robot> robots)
+        {
+            foreach (EnergyStation station in map.Stations)
+            {
+                // if i > 0. Error was, that I try to check the cell that is not going to be valid.
+                int i = _Stations[station.Position].Count - 1;
+                for (int n = 2; n >= -2; n--)
+                {
+                    for (int m = 2; (m >= -2) && (i >= 0); m--)
+                    {
+                        Position stationPos = station.Position;
+
+                        if (n == 0)
+                        {
+                            if (_Stations[station.Position][i].position != new Position(stationPos.X + n, stationPos.Y + m))
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position][i].position = temp;
+                                else
+                                    i++;
+                            }
+                            i--;
+                        }
+                        else if (n % 2 == 0 && m % 2 == 0)
+                        {
+                            if (_Stations[station.Position][i].position != new Position(stationPos.X + n, stationPos.Y + m))
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position][i].position = temp;
+                                else
+                                    i++;
+                            }
+                            i--;
+                        }
+                        else if ((n % 2 == 1 || n % 2 == -1) && (m % 2 == 1 || m % 2 == -1 || m == 0))
+                        {
+                            if (_Stations[station.Position][i].position != new Position(stationPos.X + n, stationPos.Y + m))
+                            {
+                                Position temp = new Position(stationPos.X + n, stationPos.Y + m);
+                                if (map.IsValid(temp))
+                                    _Stations[station.Position][i].position = temp;
+                                else
+                                    i++;
+                            }
+                            i--;
+                        }
+                        
+                    }
+
+                }
+            }
+        }
+
         /*
          * Assigns each robot a station to stick around to. If num of robots 
-         * assigned to a station > 16, then finds another station
+         * assigned to a station > than some amount, then finds another station
          * ExcludedStation - if you don't want to count in that station
          */
         public void AssignMeAStation(Map map, IList<Robot.Common.Robot> robots, int robotToMoveIndex)
         {
             for (int i = 0; i < 100; i++)
             {
+                // Manager.GetTheClosestFreeStation
+                // {
+                //      GetNearbyResources + IsStationTaken
+                // }
+
                 List<EnergyStation> st = map.GetNearbyResources(robots[robotToMoveIndex].Position, i);
                 if (st.Count > 0)
                 {
-                    if (_CountAssigned[st[0].Position] <= 16)
+                    foreach (EnergyStation stat in st)
                     {
-                        _AssignedStations.Add(robotToMoveIndex, st[0].Position);
-                        _CountAssigned[st[0].Position]++;
-                        break;
+                        if ((_CountAssigned[stat.Position] < 2) && robots.Count < 300)
+                        {
+                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                            _CountAssigned[stat.Position]++;
+                            return;
+                        }
+                        else if ((_CountAssigned[stat.Position] < 4) && robots.Count >= 400 && robots.Count < 500)
+                        {
+                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                            _CountAssigned[stat.Position]++;
+                            return;
+                        }
+                        else if ((_CountAssigned[stat.Position] < 5) && robots.Count >= 200 && robots.Count < 400)
+                        {
+                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                            _CountAssigned[stat.Position]++;
+                            return;
+                        }
+                        else if ((_CountAssigned[stat.Position] < 6) && robots.Count >= 400 && robots.Count < 1000)
+                        {
+                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                            _CountAssigned[stat.Position]++;
+                            return;
+                        }
                     }
                 }
             }
@@ -225,6 +295,11 @@ namespace OleksiiUzhva_RobotChallange
              * 
              * If rounds are late, don't create robots
              */
+
+            String str = robots[robotToMoveIndex].OwnerName;
+
+            
+
             if(RoundCount == 0)
             {
                 if (!b_Done_Assigning_Map)
@@ -238,52 +313,83 @@ namespace OleksiiUzhva_RobotChallange
                 int b = a + 10;
             }
 
-            RobotCommand Command = new MoveCommand() { NewPosition = robots[robotToMoveIndex].Position};
-
-            // Check if can collct energy
-
-
-
-            //Check if can move
-            // TODO: Stop wasting time checking every cell in area. Go for the firs
-            // OR FOR THE CLOSEST(?) cell.
-            Position goalPosition = _Stations[_AssignedStations[robotToMoveIndex]][0].position;
-           
-            for(int i = 0; i < 17; i++)
+            if(!_AssignedStations.ContainsKey(robotToMoveIndex))
             {
-                Cell tmp = _Stations[_AssignedStations[robotToMoveIndex]][i];
-
-                if (Manager.IsCellFree(ref tmp, robots))
-                {
-                    goalPosition = tmp.position;
-                }
-
+                AssignMeAStation(map, robots, robotToMoveIndex);
             }
 
-            //MOVEMENT
-            Cardinal direction = Cardinal.NONE;
+            RobotCommand Command = new MoveCommand() { NewPosition = robots[robotToMoveIndex].Position };
             Position currentPosition = robots[robotToMoveIndex].Position;
-            direction = Find_The_Direction(currentPosition, goalPosition);
 
-            int availableEnergy = (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.8);
-            if (DistanceHelper.Cost(currentPosition, goalPosition) <= availableEnergy)
+            // Check if can collect energy
+            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100)
             {
-                Command = new MoveCommand() { NewPosition =  goalPosition };
+                Command = new CreateNewRobotCommand();
+                CountMyBots++;
             }
+            else if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex))
+            {
+                Command = new CollectEnergyCommand();
+            }
+
             else
             {
-                availableEnergy = ((int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1) == 0 ? (int)Math.Ceiling(robots[robotToMoveIndex].Energy * 0.1) : (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1));
-                while (DistanceHelper.Cost(currentPosition, goalPosition) > availableEnergy)
+
+                if (robots[robotToMoveIndex].Position == _AssignedStations[robotToMoveIndex]) { }
+
+                
+                // 
+                // TODO: (optional) focus on cells with two or more stations crossed
+
+
+                //Check if can move
+                // TODO: Stop wasting time checking every cell in area. Go for the first
+                // OR FOR THE CLOSEST(?) cell.
+                //
+                // TODO: (optional) Check whether a station can hold rhose two robots
+                // (by checking recovery rate)
+                //
+                // TODO: Creating robot algorithm
+
+
+                Position goalPosition = new Position (_Stations[_AssignedStations[robotToMoveIndex]][0].position.X, _Stations[_AssignedStations[robotToMoveIndex]][0].position.Y);
+
+                for (int i = 0; i < _Stations[_AssignedStations[robotToMoveIndex]].Count; i++)
                 {
-                    // Shothen a vector
-                    goalPosition = Shothen_The_Vector(goalPosition, direction);
-                    direction = Find_The_Direction(currentPosition, goalPosition);
+                    Cell tmp = _Stations[_AssignedStations[robotToMoveIndex]][i];
+
+                    if (Manager.IsCellFree(ref tmp, robots))
+                    {
+                        goalPosition = tmp.position;
+                    }
+
                 }
-                Command = new MoveCommand() { NewPosition = goalPosition };
+
+                //MOVEMENT
+                Cardinal direction = Cardinal.NONE;
+                direction = Find_The_Direction(currentPosition, goalPosition);
+
+                int availableEnergy = (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.8);
+                if (DistanceHelper.Cost(currentPosition, goalPosition) <= availableEnergy)
+                {
+                    Command = new MoveCommand() { NewPosition = goalPosition };
+                }
+                else
+                {
+                    availableEnergy = ((int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1) == 0 ? (int)Math.Ceiling(robots[robotToMoveIndex].Energy * 0.1) : (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1));
+                    while (DistanceHelper.Cost(currentPosition, goalPosition) > availableEnergy)
+                    {
+                        // Shothen a vector
+                        goalPosition = Shothen_The_Vector(goalPosition, direction);
+                        direction = Find_The_Direction(currentPosition, goalPosition);
+                    }
+                    Command = new MoveCommand() { NewPosition = goalPosition };
+                }
             }
 
+            // TODO: Reassign me a station.
 
-
+            AssureAssignCells(map, robots);
 
             return Command;
 

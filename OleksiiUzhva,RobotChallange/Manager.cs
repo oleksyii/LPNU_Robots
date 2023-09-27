@@ -37,5 +37,17 @@ namespace OleksiiUzhva_RobotChallange
             return result;
         }
 
+        public bool IsRobotOnStation(IList<Robot.Common.Robot> robots, Dictionary<int, Position> _AssignedStations, Dictionary<Position, List<Cell>> _Stations, int robotToMoveIndex)
+        {
+            Position currentPosition = robots[robotToMoveIndex].Position;
+
+            foreach(Cell cell in _Stations[_AssignedStations[robotToMoveIndex]])
+            {
+                if(cell.position == currentPosition) { return true; }
+            }
+            return false;
+        }
+
+
     }
 }

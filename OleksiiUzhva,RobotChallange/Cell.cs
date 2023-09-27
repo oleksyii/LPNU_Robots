@@ -16,6 +16,11 @@ namespace OleksiiUzhva_RobotChallange
             this.free = free;
         }
 
+        public Cell(Position pos)
+        {
+            this.position=pos;
+        }
+
         public Position position { get; set; }
         public bool free { get; set; } = true;
         
