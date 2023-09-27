@@ -33,10 +33,11 @@
   <ItemGroup>
     <Reference Include="Robot.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=05c30dc4c4572aa3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Tournament\Robot.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Tournament\Robot.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Robot.Tournament">
-      <HintPath>..\..\..\..\..\..\Tournament\Robot.Tournament.dll</HintPath>
+      <HintPath>..\..\..\..\..\Tournament\Robot.Tournament.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

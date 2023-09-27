@@ -239,7 +239,7 @@ namespace OleksiiUzhva_RobotChallange
         /*
          * Needs a rework. To not to jump straight x--; y--, but first check x--, then both
          */
-             
+
         public Position Shothen_The_Vector(Position goal, Cardinal direction)
         {
             switch (direction)
@@ -268,11 +268,11 @@ namespace OleksiiUzhva_RobotChallange
         //public Position Shothen_The_Vector(Position goal, Cardinal direction, IList<Robot.Common.Robot> robots)
         //{
         //    Position result;
-        //    switch(direction)
+        //    switch (direction)
         //    {
-        //        case(Cardinal.E):
+        //        case (Cardinal.E):
         //            result = new Position(--goal.X, goal.Y);
-        //            while(!Manager.IsCellFree(result, robots))
+        //            while (!Manager.IsCellFree(result, robots))
         //            {
         //                result = new Position(--result.X, result.Y);
         //            }
@@ -405,7 +405,7 @@ namespace OleksiiUzhva_RobotChallange
             // TODO: Only those robots, that are furhter away from beginning should create robots
             // maybe make a dictionary of who created how mane, and those, who created 2 already,
             // should not make any more
-            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100 && _RobotsCreated[robotToMoveIndex] < 2)
+            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 125 && _RobotsCreated[robotToMoveIndex] < 2)
             {
                 Command = new CreateNewRobotCommand();
                 CountMyBots++;
@@ -444,11 +444,9 @@ namespace OleksiiUzhva_RobotChallange
                     }
 
                 }
-
-
                 //for (int i = 0; i < _Stations[_AssignedStations[robotToMoveIndex]].Count; i++)
                 //{
-                    
+
                 //    Cell tmp = _Stations[_AssignedStations[robotToMoveIndex]][i];
                 //    
                 //    if (Manager.IsCellFree(ref tmp, robots))
@@ -460,10 +458,9 @@ namespace OleksiiUzhva_RobotChallange
 
                 //MOVEMENT
                 // TODO: rework a moving calculation
-                Cardinal direction = Cardinal.NONE;
-                direction = Find_The_Direction(currentPosition, goalPosition);
+                Cardinal direction = Find_The_Direction(currentPosition, goalPosition);
 
-                int availableEnergy = (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.8);
+                int availableEnergy = (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.83);
                 if (DistanceHelper.Cost(currentPosition, goalPosition) <= availableEnergy)
                 {
                     
@@ -471,7 +468,7 @@ namespace OleksiiUzhva_RobotChallange
                 }
                 else
                 {
-                    availableEnergy = ((int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1) == 0 ? (int)Math.Ceiling(robots[robotToMoveIndex].Energy * 0.1) : (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.1));
+                    availableEnergy = ((int)Math.Floor(robots[robotToMoveIndex].Energy * 0.15) == 0 ? (int)Math.Ceiling(robots[robotToMoveIndex].Energy * 0.15) : (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.15));
                     while (DistanceHelper.Cost(currentPosition, goalPosition) > availableEnergy)
                     {
                         // Shothen a vector
