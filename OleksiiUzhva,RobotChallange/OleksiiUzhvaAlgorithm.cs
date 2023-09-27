@@ -364,10 +364,8 @@ namespace OleksiiUzhva_RobotChallange
                     }
 
                 }
-
                 //MOVEMENT
-                Cardinal direction = Cardinal.NONE;
-                direction = Find_The_Direction(currentPosition, goalPosition);
+                Cardinal direction = Find_The_Direction(currentPosition, goalPosition);
 
                 int availableEnergy = (int)Math.Floor(robots[robotToMoveIndex].Energy * 0.8);
                 if (DistanceHelper.Cost(currentPosition, goalPosition) <= availableEnergy)

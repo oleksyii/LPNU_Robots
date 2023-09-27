@@ -11,12 +11,13 @@ namespace OleksiiUzhva_RobotChallange
     {
         public bool IsCellFree(Position pos, IList<Robot.Common.Robot> robots)
         {
-            foreach(Robot.Common.Robot robot in robots)
+            bool result = true;
+            foreach (Robot.Common.Robot robot in robots)
             {
-                if(robot.Position != pos)
-                    return true;
+                if (robot.Position == pos)
+                    result = false;
             }
-            return false;
+            return result;
         }
 
         public bool IsCellFree(ref Cell cell, IList<Robot.Common.Robot> robots)
