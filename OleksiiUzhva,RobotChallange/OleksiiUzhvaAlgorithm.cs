@@ -51,7 +51,7 @@ namespace OleksiiUzhva_RobotChallange
         public const int c_EnergyToCreateRobot = 200;
 
         // Have a dictionary of robotIndexes and corresponding stations
-
+        //
         public OleksiiUzhvaAlgorithm()
         {
             Logger.OnLogRound += Logger_OnLogRound;
@@ -185,30 +185,30 @@ namespace OleksiiUzhva_RobotChallange
                 {
                     foreach (EnergyStation stat in st)
                     {
-                        if ((_CountAssigned[stat.Position] < 2) && robots.Count < 300)
+                        if ((_CountAssigned[stat.Position] < 2) && robots.Count < 1500)
                         {
                             _AssignedStations.Add(robotToMoveIndex, stat.Position);
                             _CountAssigned[stat.Position]++;
                             return;
                         }
-                        else if ((_CountAssigned[stat.Position] < 4) && robots.Count >= 400 && robots.Count < 500)
-                        {
-                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                            _CountAssigned[stat.Position]++;
-                            return;
-                        }
-                        else if ((_CountAssigned[stat.Position] < 5) && robots.Count >= 500 && robots.Count < 1000)
-                        {
-                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                            _CountAssigned[stat.Position]++;
-                            return;
-                        }
-                        else if ((_CountAssigned[stat.Position] < 6) && robots.Count >= 1000)
-                        {
-                            _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                            _CountAssigned[stat.Position]++;
-                            return;
-                        }
+                        //else if ((_CountAssigned[stat.Position] < 4) && robots.Count >= 400 && robots.Count < 500)
+                        //{
+                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                        //    _CountAssigned[stat.Position]++;
+                        //    return;
+                        //}
+                        //else if ((_CountAssigned[stat.Position] < 5) && robots.Count >= 500 && robots.Count < 1000)
+                        //{
+                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                        //    _CountAssigned[stat.Position]++;
+                        //    return;
+                        //}
+                        //else if ((_CountAssigned[stat.Position] < 6) && robots.Count >= 1000)
+                        //{
+                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                        //    _CountAssigned[stat.Position]++;
+                        //    return;
+                        //}
                     }
                 }
             }
@@ -405,7 +405,7 @@ namespace OleksiiUzhva_RobotChallange
             // TODO: Only those robots, that are furhter away from beginning should create robots
             // maybe make a dictionary of who created how mane, and those, who created 2 already,
             // should not make any more
-            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 125 && _RobotsCreated[robotToMoveIndex] < 2)
+            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100 && _RobotsCreated[robotToMoveIndex] < 2)
             {
                 Command = new CreateNewRobotCommand();
                 CountMyBots++;

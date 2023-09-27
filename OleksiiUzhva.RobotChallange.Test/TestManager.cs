@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
+using namespace OleksiiUzhva_RobotChallange
+
 namespace OleksiiUzhva.RobotChallange.Test
 {
     [TestClass]
@@ -9,6 +11,7 @@ namespace OleksiiUzhva.RobotChallange.Test
         [TestMethod]
         public void TestIsCellFree()
         {
+            
 
         }
     }
