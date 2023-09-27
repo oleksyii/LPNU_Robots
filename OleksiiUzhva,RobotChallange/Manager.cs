@@ -9,11 +9,21 @@ namespace OleksiiUzhva_RobotChallange
 {
     public class Manager
     {
+        //public static bool IsCellFree(Position pos, IList<Robot.Common.Robot> robots)
+        //{
+        //    foreach (Robot.Common.Robot robot in robots)
+        //    {
+        //        if (robot.Position != pos)
+        //            return true;
+        //    }
+        //    return false;
+        //}
+
         public bool IsCellFree(Position pos, IList<Robot.Common.Robot> robots)
         {
-            foreach(Robot.Common.Robot robot in robots)
+            foreach (Robot.Common.Robot robot in robots)
             {
-                if(robot.Position != pos)
+                if (robot.Position != pos)
                     return true;
             }
             return false;
@@ -48,6 +58,7 @@ namespace OleksiiUzhva_RobotChallange
             return false;
         }
 
+        
 
     }
 }
