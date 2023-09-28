@@ -102,7 +102,7 @@ namespace OleksiiUzhva_RobotChallange
                 }
             }
 
-            AssureAssignCells(map, robots);
+            //AssureAssignCells(map, robots);
 
         }
 
@@ -211,6 +211,98 @@ namespace OleksiiUzhva_RobotChallange
                         //}
                     }
                 }
+            }
+        }
+
+        public void ReassignMeAStation(Map map, IList<Robot.Common.Robot> robots, int robotToMoveIndex, ref List<Position> ExcludedStation)
+        {
+            if (!_RobotsCreated.ContainsKey(robotToMoveIndex))
+            {
+                _RobotsCreated.Add(robotToMoveIndex, 0);
+            }
+
+            --_CountAssigned[_AssignedStations[robotToMoveIndex]];
+            bool stop = false;
+            for (int i = 0; i < 100 && !stop; i++)
+            {
+                // Manager.GetTheClosestFreeStation
+                // {
+                //      GetNearbyResources + IsStationTaken
+                // }
+
+                List<EnergyStation> st = map.GetNearbyResources(robots[robotToMoveIndex].Position, i);
+                if (st.Count > 0)
+                {
+                    foreach (EnergyStation stat in st)
+                    {
+                        if ((_CountAssigned[stat.Position] < 2) && !ExcludedStation.Contains(stat.Position))
+                        {
+                            if (_AssignedStations.ContainsKey(robotToMoveIndex))
+                            {
+                                _AssignedStations[robotToMoveIndex] = stat.Position;
+                                stop = true;
+                                break;
+                            }
+                            else
+                            {
+                                _AssignedStations.Add(robotToMoveIndex, stat.Position);
+                                _CountAssigned[stat.Position]++;
+                                stop = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            AssureMeAStation(map, robots, robotToMoveIndex, ref ExcludedStation);
+        }
+
+        public void AssureMeAStation(Map map, IList<Robot.Common.Robot> robots, int robotToMoveIndex)
+        {
+            int count = 0;
+
+            foreach (Cell cell in _Stations[_AssignedStations[robotToMoveIndex]])
+            {
+                foreach (Robot.Common.Robot robot in robots)
+                {
+                    if (robot.Position == cell.position && robot.OwnerName != "Oleksii Uzhva" && robots.IndexOf(robot) < robotToMoveIndex)
+                    {
+                        count++;
+                    }
+                }
+
+            }
+            if (count >= 2)
+            {
+                List<Position> ExcludedStations = new List<Position>()
+                    {
+                        _AssignedStations[robotToMoveIndex]
+                    };
+                ReassignMeAStation(map, robots, robotToMoveIndex, ref ExcludedStations);
+            }
+        }
+
+        public void AssureMeAStation(Map map, IList<Robot.Common.Robot> robots, int robotToMoveIndex, ref List<Position> ExcludedStations)
+        {
+            int count = 0;
+
+            foreach (Cell cell in _Stations[_AssignedStations[robotToMoveIndex]])
+            {
+                foreach (Robot.Common.Robot robot in robots)
+                {
+                    if (robot.Position == cell.position && robot.OwnerName != "Oleksii Uzhva" && robots.IndexOf(robot) < robotToMoveIndex)
+                    {
+                        count++;
+
+                    }
+                }
+
+            }
+            if (count >= 2)
+            {
+                ExcludedStations.Add(_AssignedStations[robotToMoveIndex]);
+                ReassignMeAStation(map, robots, robotToMoveIndex, ref ExcludedStations);
             }
         }
 
@@ -402,10 +494,12 @@ namespace OleksiiUzhva_RobotChallange
             RobotCommand Command = new MoveCommand() { NewPosition = robots[robotToMoveIndex].Position };
             Position currentPosition = robots[robotToMoveIndex].Position;
 
+            AssureMeAStation(map, robots, robotToMoveIndex);
+
             // TODO: Only those robots, that are furhter away from beginning should create robots
             // maybe make a dictionary of who created how mane, and those, who created 2 already,
             // should not make any more
-            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100 && _RobotsCreated[robotToMoveIndex] < 2)
+            if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100 && _RobotsCreated[robotToMoveIndex] < 5)
             {
                 Command = new CreateNewRobotCommand();
                 CountMyBots++;
@@ -418,6 +512,8 @@ namespace OleksiiUzhva_RobotChallange
 
             else
             {
+
+                
 
                 if (robots[robotToMoveIndex].Position == _AssignedStations[robotToMoveIndex]) { }
 
@@ -485,6 +581,8 @@ namespace OleksiiUzhva_RobotChallange
             //AssignMeAStation(map, robots, robotToMoveIndex);
 
             AssureAssignCells(map, robots);
+
+
 
             return Command;
 
