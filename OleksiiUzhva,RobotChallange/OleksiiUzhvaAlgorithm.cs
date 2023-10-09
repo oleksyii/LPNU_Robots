@@ -23,7 +23,6 @@ namespace OleksiiUzhva_RobotChallange
         NONE
     };
 
-    // Dictionary<Position, List<Cell>>
     public class OleksiiUzhvaAlgorithm : IRobotAlgorithm
     {
         public int RoundCount = 0;
@@ -33,8 +32,6 @@ namespace OleksiiUzhva_RobotChallange
         public string Author => "Oleksii Uzhva";
 
         public string Description => "Super smart algorithm";
-
-        //public List<List<Dictionary<Position, bool>>> _Stations = new List<List<Dictionary<Position, bool>>>();
 
         public Dictionary<Position, List<Cell>> _Stations = new Dictionary<Position, List<Cell>>();
 
@@ -102,7 +99,6 @@ namespace OleksiiUzhva_RobotChallange
                 }
             }
 
-            //AssureAssignCells(map, robots);
 
         }
 
@@ -175,11 +171,6 @@ namespace OleksiiUzhva_RobotChallange
 
             for (int i = 0; i < 100; i++)
             {
-                // Manager.GetTheClosestFreeStation
-                // {
-                //      GetNearbyResources + IsStationTaken
-                // }
-
                 List<EnergyStation> st = map.GetNearbyResources(robots[robotToMoveIndex].Position, i);
                 if (st.Count > 0)
                 {
@@ -191,24 +182,6 @@ namespace OleksiiUzhva_RobotChallange
                             _CountAssigned[stat.Position]++;
                             return;
                         }
-                        //else if ((_CountAssigned[stat.Position] < 4) && robots.Count >= 400 && robots.Count < 500)
-                        //{
-                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                        //    _CountAssigned[stat.Position]++;
-                        //    return;
-                        //}
-                        //else if ((_CountAssigned[stat.Position] < 5) && robots.Count >= 500 && robots.Count < 1000)
-                        //{
-                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                        //    _CountAssigned[stat.Position]++;
-                        //    return;
-                        //}
-                        //else if ((_CountAssigned[stat.Position] < 6) && robots.Count >= 1000)
-                        //{
-                        //    _AssignedStations.Add(robotToMoveIndex, stat.Position);
-                        //    _CountAssigned[stat.Position]++;
-                        //    return;
-                        //}
                     }
                 }
             }
@@ -225,11 +198,6 @@ namespace OleksiiUzhva_RobotChallange
             bool stop = false;
             for (int i = 0; i < 100 && !stop; i++)
             {
-                // Manager.GetTheClosestFreeStation
-                // {
-                //      GetNearbyResources + IsStationTaken
-                // }
-
                 List<EnergyStation> st = map.GetNearbyResources(robots[robotToMoveIndex].Position, i);
                 if (st.Count > 0)
                 {
@@ -357,78 +325,7 @@ namespace OleksiiUzhva_RobotChallange
             }
         }
 
-        //public Position Shothen_The_Vector(Position goal, Cardinal direction, IList<Robot.Common.Robot> robots)
-        //{
-        //    Position result;
-        //    switch (direction)
-        //    {
-        //        case (Cardinal.E):
-        //            result = new Position(--goal.X, goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(--result.X, result.Y);
-        //            }
-        //            return result;
-        //        case (Cardinal.SE):
-        //            result = new Position(--goal.X, ++goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-
-        //                result = new Position(--result.X, ++result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.S):
-        //            result = new Position(goal.X, goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(result.X, ++result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.SW):
-        //            result = new Position(++goal.X, ++goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(++result.X, ++result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.W):
-        //            result = new Position(++goal.X, goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(++result.X, result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.NW):
-        //            result = new Position(++goal.X, --goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(++result.X, --result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.N):
-        //            result = new Position(goal.X, --goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(result.X, --result.Y);
-        //            }
-        //            return result;
-
-        //        case (Cardinal.NE):
-        //            result = new Position(--goal.X, --goal.Y);
-        //            while (!Manager.IsCellFree(result, robots))
-        //            {
-        //                result = new Position(--result.X, --result.Y);
-        //            }
-        //            return result;
-        //        default:
-        //            return goal;
-        //    }
-        //}
+        
 
         public RobotCommand DoStep(IList<Robot.Common.Robot> robots, int robotToMoveIndex, Map map)
         {
@@ -462,16 +359,6 @@ namespace OleksiiUzhva_RobotChallange
             // - NW (increment X, decrement Y)
             // Cost of jump = (vector's length)^2
 
-            /*
-                
-             * 
-             * 
-             * If rounds are late, don't create robots
-             */
-
-            String str = robots[robotToMoveIndex].OwnerName;
-
-            
 
             if(RoundCount == 0)
             {
@@ -496,9 +383,6 @@ namespace OleksiiUzhva_RobotChallange
 
             AssureMeAStation(map, robots, robotToMoveIndex);
 
-            // TODO: Only those robots, that are furhter away from beginning should create robots
-            // maybe make a dictionary of who created how mane, and those, who created 2 already,
-            // should not make any more
             if (Manager.IsRobotOnStation(robots, _AssignedStations, _Stations, robotToMoveIndex) && robots[robotToMoveIndex].Energy > c_EnergyToCreateRobot && (robots.Count <= 2*_Stations.Count)  && CountMyBots < 100 && _RobotsCreated[robotToMoveIndex] < 5)
             {
                 Command = new CreateNewRobotCommand();
@@ -517,9 +401,7 @@ namespace OleksiiUzhva_RobotChallange
 
                 if (robots[robotToMoveIndex].Position == _AssignedStations[robotToMoveIndex]) { }
 
-                
-                // 
-                //
+
                 // TODO: (optional) Check whether a station can hold those two robots
                 // (by checking recovery rate)
                 //
@@ -540,17 +422,7 @@ namespace OleksiiUzhva_RobotChallange
                     }
 
                 }
-                //for (int i = 0; i < _Stations[_AssignedStations[robotToMoveIndex]].Count; i++)
-                //{
-
-                //    Cell tmp = _Stations[_AssignedStations[robotToMoveIndex]][i];
-                //    
-                //    if (Manager.IsCellFree(ref tmp, robots))
-                //    {
-                //        goalPosition = tmp.position;
-                //    }
-
-                //}
+                
 
                 //MOVEMENT
                 // TODO: rework a moving calculation
@@ -568,7 +440,6 @@ namespace OleksiiUzhva_RobotChallange
                     while (DistanceHelper.Cost(currentPosition, goalPosition) > availableEnergy)
                     {
                         // Shothen a vector
-                        //goalPosition = Shothen_The_Vector(goalPosition, direction, robots);
                         goalPosition = Shothen_The_Vector(goalPosition, direction);
                         direction = Find_The_Direction(currentPosition, goalPosition);
                     }
@@ -576,25 +447,9 @@ namespace OleksiiUzhva_RobotChallange
                 }
             }
 
-            // TODO: Reassign me a station.
-            // TODO: Check if the station contains any opposit robots
-            //AssignMeAStation(map, robots, robotToMoveIndex);
-
             AssureAssignCells(map, robots);
 
-
-
             return Command;
-
-            var myRobot = robots[robotToMoveIndex];
-            Random rng = new Random();
-            var newPos = myRobot.Position;
-            //newPos.X = newPos.X + rng.Next(-10, 10);
-            newPos.X = newPos.X + 10;
-
-
-
-            return new MoveCommand(){ NewPosition = newPos };
         }
 
         
